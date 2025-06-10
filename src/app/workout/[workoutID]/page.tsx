@@ -156,7 +156,7 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
       {/* <p>{workout.description}</p> */}
       <h2>Exercises</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {workout.exercises.map((exercise) => (
+        {workout?.exercises?.map((exercise) => (
           <li
             key={exercise.id}
             style={{

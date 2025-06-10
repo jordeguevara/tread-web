@@ -1,6 +1,7 @@
 "use client";
 import { QueryWorkoutsArgs } from "@/types";
 import { gql, useQuery } from "@apollo/client";
+import { useRouter } from "next/navigation";
 
 const GET_QUERY = gql`
   query Workout($userId: ID!) {
@@ -11,10 +12,23 @@ const GET_QUERY = gql`
   }
 `;
 
+interface Workout {
+  id: string;
+  name: string;
+}
+
+interface WorkoutData {
+  workouts: Workout[];
+}
+
 export default function Home() {
-  const { loading, error, data } = useQuery<[], QueryWorkoutsArgs>(GET_QUERY, {
-    variables: { userId: "0" }, // Replace with actual user ID
-  });
+  const { loading, error, data } = useQuery<WorkoutData, QueryWorkoutsArgs>(
+    GET_QUERY,
+    {
+      variables: { userId: "0" },
+    }
+  );
+  const router = useRouter();
 
   console.log({ loading, error, workouts: data });
   if (loading) return <p>Loading...</p>;
@@ -22,47 +36,40 @@ export default function Home() {
   if (!data) return <p>No data</p>;
 
   const handleWorkoutClick = (id: string) => {
-    alert(`Workout ID: ${id}`);
+    router.push(`/workout/${id}`);
   };
 
-  const mockData = [
-    {
-      id: "1",
-      title: "Workout 1",
-    },
-    {
-      id: "2",
-      title: "Workout 2",
-    },
-    {
-      id: "3",
-      title: "Workout 3",
-    },
-  ];
-  const workouts = mockData; //data.workouts
+  const handleNewWorkoutClick = () => {
+    router.push("/workouts/create"); // Navigate to the "create workout" page
+  };
 
   return (
     <div className="bg-white text-black">
       <main className="">
         <p>Workouts:</p>
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {workouts?.map((workout) => (
-            <li
-              key={workout.id}
-              onClick={() => handleWorkoutClick(workout.id)}
-              style={{
-                cursor: "pointer",
-                padding: "10px",
-                borderBottom: "1px solid #ccc",
-              }}
-            >
-              {workout.title}
-            </li>
-          ))}
-        </ul>
+        {data?.workouts && data?.workouts.length > 0 && (
+          <ul style={{ listStyleType: "none", padding: 0 }}>
+            {data?.workouts?.map((workout) => (
+              <li
+                key={workout.id}
+                onClick={() => handleWorkoutClick(workout.id)}
+                style={{
+                  cursor: "pointer",
+                  padding: "10px",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                {workout.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        {data?.workouts && data?.workouts.length === 0 && (
+          <p>No workouts found.</p>
+        )}
         <button
           className="bg-blue-600 text-white  py-2 rounded w-full"
-          onClick={() => alert("New Workout button clicked!")}
+          onClick={handleNewWorkoutClick}
         >
           New Workout
         </button>
