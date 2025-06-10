@@ -14,8 +14,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff; /* Change to white or any other color */
+    --foreground: #000000; /* Adjust text color accordingly */
   }
 }
 
