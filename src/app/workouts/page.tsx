@@ -40,7 +40,7 @@ export default function Home() {
   };
 
   const handleNewWorkoutClick = () => {
-    router.push("/workouts/create"); // Navigate to the "create workout" page
+    router.push("/create"); // Navigate to the "create workout" page
   };
 
   return (
