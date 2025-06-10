@@ -15,6 +15,7 @@ interface Workout {
 }
 
 interface Set {
+  id: number;
   weight: number;
   reps: number;
 }
@@ -49,27 +50,22 @@ const ADD_SET_MUTATION = gql`
   }
 `;
 
-const DELETE_SET_MUTATION = gql`
-  mutation deleteSet($setID: deleteSetInput!) {
-    deleteSet(input: $setID)
-  }
-`;
+// const DELETE_SET_MUTATION = gql`
+//   mutation deleteSet($setID: deleteSetInput!) {
+//     deleteSet(input: $setID)
+//   }
+// `;
 
 const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
   const { loading, error, data } = useQuery(GET_WORKOUT_DETAIL, {
     variables: { workoutID },
     onCompleted: (data) => {
       if (data?.workout?.sets) {
-        const setsByExercise = data.workout.sets.reduce(
-          (acc: { [key: number]: Set[] }, set: Set) => {
-            if (!acc[set.exerciseID]) {
-              acc[set.exerciseID] = [];
-            }
-            acc[set.exerciseID].push({
-              id: set.id,
-              weight: set.weight,
-              reps: set.numOfReps,
-            });
+        const setsByExercise = data.workout.exercises.reduce(
+          (acc: { [key: number]: Set[] }, exercise: Exercise) => {
+            acc[exercise.id] = data.workout.sets.filter(
+              (set: Set) => set.id === exercise.id // Adjust logic based on actual association
+            );
             return acc;
           },
           {}
@@ -80,7 +76,7 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
   });
 
   const [addSets] = useMutation(ADD_SET_MUTATION);
-  const [deleteSet] = useMutation(DELETE_SET_MUTATION);
+  // const [deleteSet] = useMutation(DELETE_SET_MUTATION);
 
   const [expandedExercise, setExpandedExercise] = useState<number | null>(null);
   const [exerciseSets, setExerciseSets] = useState<{ [key: number]: Set[] }>(
@@ -99,7 +95,10 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
   const handleAddSet = (exerciseId: number) => {
     setExerciseSets((prev) => ({
       ...prev,
-      [exerciseId]: [...(prev[exerciseId] || []), { weight: 0, reps: 0 }],
+      [exerciseId]: [
+        ...(prev[exerciseId] || []),
+        { id: undefined, weight: 0, reps: 0 },
+      ],
     }));
   };
 
@@ -135,8 +134,8 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
           },
         },
       });
-      const savedSets = response.data.addSets.map((savedSet: any) => ({
-        id: savedSet.id, // Use the backend-generated ID
+      const savedSets = response.data.addSets.map((savedSet) => ({
+        id: savedSet.id,
         weight: savedSet.weight,
         reps: savedSet.numberOfReps,
       }));
@@ -153,8 +152,8 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>{workout.name}</h1>
-      <p>{workout.description}</p>
+      {/* <h1>{workout.name}</h1> */}
+      {/* <p>{workout.description}</p> */}
       <h2>Exercises</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {workout.exercises.map((exercise) => (
@@ -266,7 +265,7 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
 const Page = () => {
   const params = useParams();
   const workoutID = params?.workoutID;
-  return <WorkoutPage workoutID={workoutID} />;
+  return <WorkoutPage workoutID={workoutID as string} />;
 };
 
 export default Page;
