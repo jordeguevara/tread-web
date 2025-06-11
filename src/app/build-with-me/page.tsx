@@ -170,7 +170,9 @@ export default function BuildWithMePage() {
             <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
               <h2 className="text-xl font-semibold mb-4">Give What You Can</h2>
               <p className="mb-4">
-                I can make it go a while. Add a note if you'd like!
+                You’re the kind of person who doesn’t fit in a box. I respect
+                that. How much do you think this project is worth? I can make it
+                go a while. Add a note if you'd like!
               </p>
               <input
                 type="number"
