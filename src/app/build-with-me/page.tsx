@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Header } from "../page";
-import { metadata } from "../layout";
 
 const SupportButton = ({
   amount,
@@ -140,6 +138,12 @@ export default function BuildWithMePage() {
             If you're down to support, hit the button. If not, leave a comment
             and tell me why. Feedback sharpens the blade.
           </p>
+
+          <p className="mt-4">
+            Back the Build. Get Early Access. Lock In Lifetime Pricing. Support
+            now and you'll never pay full price - you’ll get everything before
+            the crowd and lock in your access for the next 3–5 years.
+          </p>
         </section>
 
         <section className="mb-8">
@@ -212,8 +216,6 @@ export default function BuildWithMePage() {
             what works, what sucks, what you’d kill to see in a fitness app. I
             read everything. Even the harsh stuff. Especially the harsh stuff.
           </p>
-          {/* Replace with your comment system integration */}
-          <div className="mt-4"></div>
         </section>
       </div>
     </>
