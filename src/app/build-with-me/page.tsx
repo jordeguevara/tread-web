@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Header } from "../page";
+import { metadata } from "../layout";
 
 const SupportButton = ({
   amount,
@@ -61,7 +62,10 @@ export default function BuildWithMePage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        productName: `Custom Support: ${customNote || "No note provided"}`,
+        productName: "Custom Support",
+        metadata: {
+          customerNote: customNote || "No note provided",
+        },
         unitAmount: amount * 100,
         currency: "usd",
       }),
