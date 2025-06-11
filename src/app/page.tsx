@@ -5,11 +5,12 @@ import { useState } from "react";
 import Image from "next/image";
 import Footer from "@/components/footer";
 // import { ArrowDown, Smartphone, Download } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 const APP_NAME = "Tread";
 const COMPANY_NAME = "Viracocha Software";
 
-const Header = () => {
+export const Header = () => {
+  const router = useRouter();
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -45,7 +46,12 @@ const Header = () => {
             Download
           </a>
         </nav>
-        <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700">
+        <button
+          onClick={() => {
+            router.push("/workouts");
+          }}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700"
+        >
           Get Early Access
         </button>
       </div>
@@ -54,6 +60,7 @@ const Header = () => {
 };
 
 const Home = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
 
   const handleEarlyAccess = () => {
@@ -101,9 +108,9 @@ const Home = () => {
           </h3>
           <p className="text-blue-100 mb-4">
             Get lifetime access to premium features for just $29/year (Regular
-            price: $99/year)
+            price: $89/year)
           </p>
-          <div className="flex max-w-md mx-auto">
+          <div className="flex max-w-md mx-auto bg-white rounded-xl overflow-hidden shadow-lg">
             <input
               type="email"
               placeholder="Enter your email"
@@ -113,7 +120,7 @@ const Home = () => {
             />
             <button
               onClick={handleEarlyAccess}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-r-xl font-semibold"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-r-xl font-semibold border-l border-gray-300"
             >
               Lock in Price
             </button>
@@ -121,15 +128,15 @@ const Home = () => {
         </div>
 
         {/* Hero Image Placeholder */}
-        <div className="relative">
+        {/* <div className="relative">
           <div className="w-full max-w-4xl mx-auto h-96 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl shadow-2xl flex items-center justify-center">
             <div className="text-center">
-              {/* <Smartphone className="h-24 w-24 text-blue-600 mx-auto mb-4" /> */}
+              <Smartphone className="h-24 w-24 text-blue-600 mx-auto mb-4" />
               <p className="text-gray-600 text-lg">App Screenshot Preview</p>
             </div>
           </div>
-          {/* <ArrowDown className="h-8 w-8 text-gray-400 mx-auto mt-8 animate-bounce" /> */}
-        </div>
+          <ArrowDown className="h-8 w-8 text-gray-400 mx-auto mt-8 animate-bounce" />
+        </div> */}
       </section>
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">
@@ -199,7 +206,7 @@ const Home = () => {
       </section>
 
       {/* Current App Showcase */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 ">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -247,11 +254,17 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white p-8 rounded-3xl shadow-2xl">
+            {/* <div className="bg-white p-8 rounded-3xl shadow-2xl">
               <div className="bg-gradient-to-br from-blue-100 to-purple-100 h-64 rounded-2xl flex items-center justify-center">
-                <p className="text-gray-600 text-lg">Current App Interface</p>
+                <Image
+                  src="/preview.svg"
+                  alt="App current app preview"
+                  height={64}
+                  width={64}
+                  objectFit="cover"
+                />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -278,6 +291,7 @@ const Home = () => {
                 { label: "Progress charts" },
               ]}
               buttonText="Download Now"
+              onClick={() => router.push("/workouts")}
             />
 
             <PricingCard
@@ -294,6 +308,9 @@ const Home = () => {
               isHighlight
               highlightText="Early Bird"
               buttonText="Lock in Early Bird Price"
+              onClick={() => {
+                router.push("/support");
+              }}
             />
           </div>
         </div>
