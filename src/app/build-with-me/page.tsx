@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { Header } from "../page";
 
 const SupportButton = ({
   amount,
   description,
+  onCustomSupport,
 }: {
   amount: number;
   description: string;
+  onCustomSupport?: () => void;
 }) => {
   const handleSupport = async () => {
     const response = await fetch("/api/stripe/checkout", {
@@ -31,7 +34,9 @@ const SupportButton = ({
   return (
     <button
       className="rounded p-4 bg-blue-600 text-white hover:bg-blue-500"
-      onClick={handleSupport}
+      onClick={
+        amount === 0 && onCustomSupport ? onCustomSupport : handleSupport
+      }
     >
       {description}
     </button>
@@ -39,6 +44,34 @@ const SupportButton = ({
 };
 
 export default function BuildWithMePage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customAmount, setCustomAmount] = useState("");
+  const [customNote, setCustomNote] = useState("");
+
+  const handleCustomSupport = async () => {
+    const amount = parseFloat(customAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+
+    const response = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productName: `Custom Support: ${customNote || "No note provided"}`,
+        unitAmount: amount * 100,
+        currency: "usd",
+      }),
+    });
+
+    const data = await response.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  };
   return (
     <>
       <Header />
@@ -123,9 +156,48 @@ export default function BuildWithMePage() {
             <SupportButton
               amount={0}
               description="Custom – You tell me what it’s worth"
+              onCustomSupport={() => setIsModalOpen(true)}
             />
           </div>
         </section>
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+              <h2 className="text-xl font-semibold mb-4">Give What You Can</h2>
+              <p className="mb-4">
+                I can make it go a while. Add a note if you'd like!
+              </p>
+              <input
+                type="number"
+                placeholder="Enter amount ($)"
+                className="w-full p-2 border rounded mb-4"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+              />
+              <textarea
+                placeholder="Add a note (optional)"
+                className="w-full p-2 border rounded mb-4"
+                value={customNote}
+                onChange={(e) => setCustomNote(e.target.value)}
+              ></textarea>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="p-2 bg-gray-300 rounded hover:bg-gray-400"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="p-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+                  onClick={handleCustomSupport}
+                >
+                  Support
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold">Leave a Comment</h2>
@@ -135,13 +207,7 @@ export default function BuildWithMePage() {
             read everything. Even the harsh stuff. Especially the harsh stuff.
           </p>
           {/* Replace with your comment system integration */}
-          <div className="mt-4">
-            <iframe
-              src="https://commentbox.io/embed"
-              className="w-full h-64 border rounded"
-              title="Comments"
-            ></iframe>
-          </div>
+          <div className="mt-4"></div>
         </section>
       </div>
     </>
