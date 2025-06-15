@@ -90,9 +90,7 @@ export default function Home() {
             ))}
           </ul>
         )}
-        {data?.workouts && data?.workouts.length === 0 && (
-          <p>No workouts found.</p>
-        )}
+        {true && <p className="pl-4">No workouts found.</p>}
       </main>
       <div className="mx-4 sticky bottom-8 bg-white">
         <button
