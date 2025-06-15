@@ -6,12 +6,14 @@ import { useParams } from "next/navigation";
 interface Exercise {
   id: number;
   name: string;
+  title?: string;
 }
 
 interface Workout {
   title: string;
   description: string;
   exercises: Exercise[];
+  id: string;
 }
 
 interface Set {
@@ -39,6 +41,15 @@ const GET_WORKOUT_DETAIL = gql`
   }
 `;
 
+const GET_EXERCISES_QUERY = gql`
+  query getAllExercises {
+    getExercises {
+      id
+      title
+    }
+  }
+`;
+
 const ADD_SET_MUTATION = gql`
   mutation addSets($input: SetsInput!) {
     addSets(input: $input) {
@@ -46,6 +57,15 @@ const ADD_SET_MUTATION = gql`
       numberOfReps
       weight
       workoutExerciseID
+    }
+  }
+`;
+
+const ADD_EXERCISES_MUTATION = gql`
+  mutation AddExercises($addExercisesInput: AddExercisesInput!) {
+    addExercisesToWorkout(input: $addExercisesInput) {
+      id
+      title
     }
   }
 `;
@@ -75,16 +95,55 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
     },
   });
 
+  const {
+    loading: exercisesLoading,
+    error: exercisesError,
+    data: exercisesData,
+  } = useQuery(GET_EXERCISES_QUERY);
+
+  const toggleExerciseSelection = (id: string) => {
+    setSelectedExercises((prev) =>
+      prev.includes(id)
+        ? prev.filter((exerciseId) => exerciseId !== id)
+        : [...prev, id]
+    );
+  };
+  const [addExercises] = useMutation(ADD_EXERCISES_MUTATION);
+  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+
   const [addSets] = useMutation(ADD_SET_MUTATION);
   // const [deleteSet] = useMutation(DELETE_SET_MUTATION);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedExercise, setExpandedExercise] = useState<number | null>(null);
   const [exerciseSets, setExerciseSets] = useState<{ [key: number]: Set[] }>(
     {}
   );
 
+  const handleAddExercises = async () => {
+    try {
+      await addExercises({
+        variables: {
+          addExercisesInput: {
+            workoutID: workout.id,
+            exerciseIDs: selectedExercises,
+          },
+        },
+      });
+      alert("Exercises added successfully!");
+      setSelectedExercises([]);
+    } catch (error) {
+      console.error("Error adding exercises:", error);
+      alert("Failed to add exercises.");
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+  if (loading || exercisesLoading) return <p>Loading...</p>;
+  if (error || exercisesError)
+    return <p>Error: {error?.message || exercisesError?.message}</p>;
+
+  const allExercises: Exercise[] = exercisesData.getExercises;
 
   const workout: Workout = data.workout;
 
@@ -258,6 +317,98 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
           </li>
         ))}
       </ul>
+
+      <button
+        onClick={() => setIsModalOpen(true)}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#007bff",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Add Exercises
+      </button>
+
+      {isModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "400px",
+              maxHeight: "80%",
+              overflowY: "auto",
+            }}
+          >
+            <h2>Select Exercises</h2>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {allExercises.map((exercise) => (
+                <li
+                  key={exercise.id}
+                  style={{
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    marginBottom: "10px",
+                    padding: "10px",
+                    cursor: "pointer",
+                    backgroundColor: selectedExercises.includes(
+                      String(exercise.id)
+                    )
+                      ? "#d1e7dd"
+                      : "#fff",
+                  }}
+                  onClick={() => toggleExerciseSelection(String(exercise.id))}
+                >
+                  {exercise.title}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={handleAddExercises}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#007bff",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}
+            >
+              Add Selected Exercises
+            </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#dc3545",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
