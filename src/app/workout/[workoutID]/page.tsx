@@ -241,48 +241,52 @@ const WorkoutPage: React.FC<{ workoutID: string }> = ({ workoutID }) => {
               >
                 {exerciseSets[exercise.id]?.map((set, index) => (
                   <div key={index} style={{ marginBottom: "10px" }}>
-                    <label>
-                      Weight (lbs):
-                      <input
-                        type="number"
-                        value={set.weight}
-                        onChange={(e) =>
-                          handleSetChange(
-                            exercise.id,
-                            index,
-                            "weight",
-                            parseInt(e.target.value, 10)
-                          )
-                        }
-                        style={{
-                          marginLeft: "10px",
-                          padding: "5px",
-                          border: "1px solid #ccc",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    </label>
-                    <label style={{ marginLeft: "20px" }}>
-                      Reps:
-                      <input
-                        type="number"
-                        value={set.reps}
-                        onChange={(e) =>
-                          handleSetChange(
-                            exercise.id,
-                            index,
-                            "reps",
-                            parseInt(e.target.value, 10)
-                          )
-                        }
-                        style={{
-                          marginLeft: "10px",
-                          padding: "5px",
-                          border: "1px solid #ccc",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    </label>
+                    <div style={{ marginBottom: "10px" }}>
+                      <label>
+                        Weight (lbs):
+                        <input
+                          type="number"
+                          value={set.weight}
+                          onChange={(e) =>
+                            handleSetChange(
+                              exercise.id,
+                              index,
+                              "weight",
+                              parseInt(e.target.value, 10)
+                            )
+                          }
+                          style={{
+                            marginLeft: "10px",
+                            padding: "5px",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      </label>
+                    </div>
+                    <div>
+                      <label>
+                        Reps:
+                        <input
+                          type="number"
+                          value={set.reps}
+                          onChange={(e) =>
+                            handleSetChange(
+                              exercise.id,
+                              index,
+                              "reps",
+                              parseInt(e.target.value, 10)
+                            )
+                          }
+                          style={{
+                            marginLeft: "10px",
+                            padding: "5px",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
                 ))}
                 <button
