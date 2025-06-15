@@ -40,7 +40,7 @@ const CREATE_WORKOUT_MUTATION = gql`
 
 export default function CreatePage() {
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
-
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     loading,
     data: exercises,
@@ -73,6 +73,18 @@ export default function CreatePage() {
     acc[exercise.bodyPart].push(exercise);
     return acc;
   }, {} as Record<string, Exercise[]>);
+
+  const filteredGroupedExercises = groupedExercises
+    ? Object.entries(groupedExercises).reduce((acc, [bodyPart, exercises]) => {
+        const filteredExercises = exercises.filter((exercise) =>
+          exercise.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        if (filteredExercises.length > 0) {
+          acc[bodyPart] = filteredExercises;
+        }
+        return acc;
+      }, {} as Record<string, Exercise[]>)
+    : null;
 
   // Handle adding selected exercises
   const handleAddExercises = async () => {
@@ -107,6 +119,7 @@ export default function CreatePage() {
 
       alert("Exercises added successfully!");
       setSelectedExercises([]);
+      setSearchTerm("");
     } catch (error) {
       console.error("Error adding exercises:", error);
       alert("Failed to add exercises.");
@@ -122,33 +135,56 @@ export default function CreatePage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Select Exercises</h1>
-      {groupedExercises &&
-        Object.entries(groupedExercises).map(([bodyPart, exercises]) => (
-          <div key={bodyPart} className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">{bodyPart}</h2>
-            <div className="space-y-2">
-              {exercises.map((exercise) => (
-                <div
-                  key={exercise.id}
-                  className={`p-2 border rounded-md flex justify-between items-center ${
-                    selectedExercises.includes(exercise.id) ? "bg-blue-100" : ""
-                  }`}
-                >
-                  <span>{exercise.title}</span>
-                  <button
-                    onClick={() => toggleExerciseSelection(exercise.id)}
-                    className="text-sm text-blue-500"
+      <div>
+        <p className="text-center font-semibold pt-5 pb-4 text-2xl">
+          Add Exercises
+        </p>
+      </div>
+      <div className="mb-4 flex items-center gap-2">
+        <input
+          type="text"
+          placeholder="Search exercises..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        />
+        <button
+          onClick={() => setSearchTerm("")}
+          className="p-2 bg-gray-200 rounded-md hover:bg-gray-300"
+        >
+          Clear
+        </button>
+      </div>
+      {filteredGroupedExercises &&
+        Object.entries(filteredGroupedExercises).map(
+          ([bodyPart, exercises]) => (
+            <div key={bodyPart} className="mb-6">
+              <h2 className="text-lg font-semibold mb-2">{bodyPart}</h2>
+              <div className="space-y-2">
+                {exercises.map((exercise) => (
+                  <div
+                    key={exercise.id}
+                    className={`p-2 border rounded-md flex justify-between items-center ${
+                      selectedExercises.includes(exercise.id)
+                        ? "bg-blue-100"
+                        : ""
+                    }`}
                   >
-                    {selectedExercises.includes(exercise.id)
-                      ? "Deselect"
-                      : "Select"}
-                  </button>
-                </div>
-              ))}
+                    <span>{exercise.title}</span>
+                    <button
+                      onClick={() => toggleExerciseSelection(exercise.id)}
+                      className="text-sm text-blue-500"
+                    >
+                      {selectedExercises.includes(exercise.id)
+                        ? "Deselect"
+                        : "Select"}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       <div className="sticky bottom-0 bg-white p-4 shadow-md">
         <button
           onClick={handleAddExercises}

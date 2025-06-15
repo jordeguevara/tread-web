@@ -1,8 +1,10 @@
 @import "tailwindcss";
+/* @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"); */
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-sans: "Manrope", sans-serif;
 }
 
 @theme inline {
