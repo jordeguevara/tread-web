@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://tread-web.vercel.app
+
+# Sitemaps
+Sitemap: https://tread-web.vercel.app/sitemap.xml

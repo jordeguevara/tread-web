@@ -31,7 +31,6 @@ export default function Home() {
   );
   const router = useRouter();
 
-  console.log({ loading, error, workouts: data });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
   if (!data) return <p>No data</p>;
@@ -74,7 +73,10 @@ export default function Home() {
                   alignItems: "center",
                 }}
               >
-                <div className="bg-gray-200 p-2 rounded">
+                <div
+                  className="bg-gray-200 p-2 rounded"
+                  onClick={() => handleWorkoutClick(workout.id)}
+                >
                   <Image
                     src="db.svg"
                     alt={workout.name}
